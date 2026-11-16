@@ -62,7 +62,22 @@ the routes to email, a booking system or a D1 table to keep the requests.
 
 No payment is taken anywhere.
 
-## Deploy with Freebuff Sites
+## Deploy
 
-`deploy.json` already points at the build output. After `bun run build`, deploy
-it with the `sites_deploy` tool (or the Sites API) from this directory.
+There are three build targets, all built from this directory:
+
+| Target | Command | Output |
+| --- | --- | --- |
+| Static host (Vercel) | `npm run build:vercel` | `dist-vercel` |
+| Cloudflare Workers | `npm run build` | `dist/client` and `dist/tour_operator/index.js` |
+| Offline copy | `npm run build:offline` | `dist-offline/client/index.html` |
+
+- **Vercel** builds from `vercel.json`, which serves `dist-vercel` with a
+  single-page rewrite. That build is static: bookings, enquiries, reviews and
+  the newsletter are answered in the browser and stored in the visitor's own
+  `localStorage`, so nothing is emailed or kept server-side.
+- **Cloudflare** uses `wrangler.jsonc`. Here the Hono Worker in
+  `src/worker/index.ts` validates every form; point its routes at email, a
+  booking system or a D1 table to keep the requests.
+- **Offline** inlines the whole app into one HTML file that runs from a folder
+  with no server. Rebuild after editing and hard-reload (Ctrl+F5) the file.
